@@ -41,12 +41,41 @@ with three formulations differing in polymer molecular weight.
 
 st.markdown("---")
 
+# ── Sidebar Controls ─────────────────────────────────────────────────────────
+st.sidebar.header("⚙️ Level C Controls")
+
+st.sidebar.subheader("Formulation A (Low MW)")
+fmax_A = st.sidebar.slider("A: Max release (%)", 50, 100, 88, 2, key="fA")
+tau_A = st.sidebar.slider("A: Weibull τ (h)", 100, 600, 300, 25, key="tA",
+                           help="Scale parameter — lower = faster release")
+burst_A = st.sidebar.slider("A: Burst (%)", 0.0, 30.0, 15.0, 1.0, key="bA")
+
+st.sidebar.markdown("---")
+st.sidebar.subheader("Formulation B (Med MW)")
+fmax_B = st.sidebar.slider("B: Max release (%)", 40, 90, 68, 2, key="fB")
+tau_B = st.sidebar.slider("B: Weibull τ (h)", 200, 700, 420, 25, key="tB")
+burst_B = st.sidebar.slider("B: Burst (%)", 0.0, 20.0, 7.0, 0.5, key="bB")
+
+st.sidebar.markdown("---")
+st.sidebar.subheader("Formulation C (High MW)")
+fmax_C = st.sidebar.slider("C: Max release (%)", 30, 80, 58, 2, key="fC")
+tau_C = st.sidebar.slider("C: Weibull τ (h)", 300, 800, 500, 25, key="tC")
+burst_C = st.sidebar.slider("C: Burst (%)", 0.0, 15.0, 4.5, 0.5, key="bC")
+
+st.sidebar.markdown("---")
+st.sidebar.info("💡 Adjust dissolution parameters to see how they affect correlations, R² heatmap, and f1/f2 similarity. Bringing B and C closer makes f2 → SIMILAR.")
+
 # ── Generate Data ────────────────────────────────────────────────────────────
 @st.cache_data
-def get_data():
-    return generate_level_c_data()
+def get_data(fA, tA, bA, fB, tB, bB, fC, tC, bC):
+    return generate_level_c_data(
+        fmax_A=fA, tau_A=tA, burst_A=bA,
+        fmax_B=fB, tau_B=tB, burst_B=bB,
+        fmax_C=fC, tau_C=tC, burst_C=bC,
+    )
 
-data = get_data()
+data = get_data(fmax_A, tau_A, burst_A, fmax_B, tau_B, burst_B,
+                fmax_C, tau_C, burst_C)
 
 
 # =============================================================================
@@ -198,7 +227,7 @@ st.header("Step 3: Full Correlation Matrix")
 st.markdown("""
 The **8 × 3 heatmap** maps all in vitro parameters against all in vivo parameters.
 Cell values show R² and slope direction (↑ positive, ↓ negative).
-Click on any cell's parameter pair above to explore it in detail.
+Use the dropdowns above to explore any specific pair in detail.
 """)
 
 # Build full matrix
@@ -231,6 +260,8 @@ st.markdown("""
 - **MRT** typically shows the strongest correlations across dissolution parameters
 - **MDT** is often the only parameter with a **positive slope** — longer dissolution → longer residence
 - **Tmax** correlations may be weaker due to non-linear absorption kinetics
+
+*Adjust the sidebar sliders to see how formulation parameters shift the heatmap pattern.*
 """)
 
 
@@ -279,10 +310,12 @@ with col2:
 
 # Pre-computed f1/f2 summary
 st.markdown("---")
-st.subheader("Pre-Computed f1/f2 Summary")
+st.subheader("All Pairwise f1/f2 Comparisons")
 
 fig_f1f2 = plot_f1_f2_bars(data['f1_f2'])
 st.plotly_chart(fig_f1f2, use_container_width=True)
+
+st.markdown("*Bring B and C formulations closer in the sidebar (similar τ and Fmax) to push their f2 above 50 (SIMILAR).*")
 
 
 # =============================================================================
@@ -296,7 +329,7 @@ With **n = 2** formulations, any Level C correlation yields **R² = 1.00 trivial
 (two points always define a perfect line). The scientific value is limited to slope
 direction and magnitude.
 
-With **n = 3** formulations (as shown here), R² values range from ~0.77 to ~0.97,
+With **n = 3** formulations (as shown here), R² values range realistically,
 providing genuine statistical power to distinguish strong from weak correlations.
 """)
 

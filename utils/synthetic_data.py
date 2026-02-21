@@ -149,10 +149,23 @@ def generate_level_a_data(k_fast=0.30, k_medium=0.15, k_slow=0.08):
 # Level B — Statistical Moment Comparison
 # =============================================================================
 
-def generate_level_b_data():
+def generate_level_b_data(k_fast=0.30, k_medium=0.15, k_slow=0.08,
+                          p1_burst_frac=40.0, p1_burst_k=2.0,
+                          p2_k=0.16):
     """
     Generate Level B data (MDT vs MRT) from Level A scenario,
     plus a pathological example showing limitation of Level B.
+
+    Parameters
+    ----------
+    k_fast, k_medium, k_slow : float
+        Dissolution rate constants for the 3 ER formulations (h⁻¹).
+    p1_burst_frac : float
+        Fraction of dose in burst phase for pathological P1 (%).
+    p1_burst_k : float
+        Burst phase rate constant for P1 (h⁻¹).
+    p2_k : float
+        First-order dissolution rate constant for P2 (h⁻¹).
 
     Returns
     -------
@@ -161,7 +174,8 @@ def generate_level_b_data():
         'pathological_example' (two formulations with same MDT, different PK)
     """
     # Get Level A data for standard comparison
-    data_a = generate_level_a_data()
+    data_a = generate_level_a_data(k_fast=k_fast, k_medium=k_medium,
+                                    k_slow=k_slow)
 
     mdt_values = {}
     mrt_values = {}
@@ -188,12 +202,13 @@ def generate_level_b_data():
     times_path = np.linspace(0, 24, 100)
 
     # Formulation P1: Biphasic — fast burst then slow (MDT ≈ 4.5h)
-    p1_release = 40 * (1 - np.exp(-2.0 * times_path)) + \
-                 60 * (1 - np.exp(-0.05 * times_path))
+    p1_slow_frac = 100.0 - p1_burst_frac
+    p1_release = p1_burst_frac * (1 - np.exp(-p1_burst_k * times_path)) + \
+                 p1_slow_frac * (1 - np.exp(-0.05 * times_path))
     p1_release = np.minimum(p1_release, 100)
 
     # Formulation P2: Zero-order-like — steady release (MDT ≈ 4.5h)
-    p2_release = first_order_release(times_path, k=0.16, f_max=100.0)
+    p2_release = first_order_release(times_path, k=p2_k, f_max=100.0)
 
     # Compute MDTs to verify they're similar
     mdt_p1 = compute_mdt(times_path, p1_release)
@@ -233,7 +248,18 @@ def generate_level_b_data():
 # Level C — PLGA Depot Scenario (matches ivivc-level-c-viz architecture)
 # =============================================================================
 
-def generate_level_c_data():
+def generate_level_c_data(
+    # Formulation A Weibull params
+    fmax_A=88, tau_A=300, beta_A=0.75, burst_A=15, burst_tau_A=8,
+    # Formulation B Weibull params
+    fmax_B=68, tau_B=420, beta_B=0.70, burst_B=7, burst_tau_B=10,
+    # Formulation C Weibull params
+    fmax_C=58, tau_C=500, beta_C=0.68, burst_C=4.5, burst_tau_C=11,
+    # PK params: (a1, alpha1, ka, a2, alpha2) per formulation
+    pk_A_params=(0.90, 0.004, 1.2, 0.08, 0.0006),
+    pk_B_params=(0.60, 0.0025, 0.20, 0.20, 0.0005),
+    pk_C_params=(0.25, 0.0012, 0.06, 0.35, 0.0003),
+):
     """
     Generate synthetic Level C IVIVC data for PLGA depot formulations.
 
@@ -254,18 +280,18 @@ def generate_level_c_data():
     pk_times_d = pk_times_h / 24.0
 
     # In vitro release profiles (Weibull model)
-    release_A = weibull_release(iv_times_h, fmax=88, tau=300, beta=0.75,
-                                burst_frac=15, burst_tau=8)
-    release_B = weibull_release(iv_times_h, fmax=68, tau=420, beta=0.70,
-                                burst_frac=7, burst_tau=10)
-    release_C = weibull_release(iv_times_h, fmax=58, tau=500, beta=0.68,
-                                burst_frac=4.5, burst_tau=11)
+    release_A = weibull_release(iv_times_h, fmax=fmax_A, tau=tau_A, beta=beta_A,
+                                burst_frac=burst_A, burst_tau=burst_tau_A)
+    release_B = weibull_release(iv_times_h, fmax=fmax_B, tau=tau_B, beta=beta_B,
+                                burst_frac=burst_B, burst_tau=burst_tau_B)
+    release_C = weibull_release(iv_times_h, fmax=fmax_C, tau=tau_C, beta=beta_C,
+                                burst_frac=burst_C, burst_tau=burst_tau_C)
     release_sol = np.minimum(100, 100 * (1 - np.exp(-0.5 * iv_times_h)))
 
     # PK profiles (bi-exponential depot)
-    pk_A = biexponential_depot(pk_times_h, 0.90, 0.004, 1.2, 0.08, 0.0006)
-    pk_B = biexponential_depot(pk_times_h, 0.60, 0.0025, 0.20, 0.20, 0.0005)
-    pk_C = biexponential_depot(pk_times_h, 0.25, 0.0012, 0.06, 0.35, 0.0003)
+    pk_A = biexponential_depot(pk_times_h, *pk_A_params)
+    pk_B = biexponential_depot(pk_times_h, *pk_B_params)
+    pk_C = biexponential_depot(pk_times_h, *pk_C_params)
 
     # Normalize to C/Cmax of A
     cmax_A = np.max(pk_A)

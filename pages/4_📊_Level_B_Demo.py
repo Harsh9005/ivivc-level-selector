@@ -37,12 +37,59 @@ It reduces each profile to a single number, which means:
 
 st.markdown("---")
 
+# ── Sidebar Controls ─────────────────────────────────────────────────────────
+st.sidebar.header("⚙️ Level B Controls")
+
+st.sidebar.subheader("ER Formulations")
+k_fast = st.sidebar.slider(
+    "F1 (Fast) dissolution k (h⁻¹)",
+    min_value=0.10, max_value=0.60, value=0.30, step=0.02,
+    key="b_kf",
+    help="First-order dissolution rate constant"
+)
+k_medium = st.sidebar.slider(
+    "F2 (Medium) dissolution k (h⁻¹)",
+    min_value=0.05, max_value=0.40, value=0.15, step=0.02,
+    key="b_km",
+)
+k_slow = st.sidebar.slider(
+    "F3 (Slow) dissolution k (h⁻¹)",
+    min_value=0.02, max_value=0.25, value=0.08, step=0.01,
+    key="b_ks",
+)
+
+st.sidebar.markdown("---")
+st.sidebar.subheader("Pathological Example")
+p1_burst = st.sidebar.slider(
+    "P1 burst fraction (%)",
+    min_value=10.0, max_value=70.0, value=40.0, step=5.0,
+    key="p1_burst",
+    help="Fraction of dose released in the burst phase of biphasic P1"
+)
+p1_burst_k = st.sidebar.slider(
+    "P1 burst rate (h⁻¹)",
+    min_value=0.5, max_value=5.0, value=2.0, step=0.25,
+    key="p1_bk",
+    help="Rate constant for the burst phase"
+)
+p2_k = st.sidebar.slider(
+    "P2 steady dissolution k (h⁻¹)",
+    min_value=0.05, max_value=0.40, value=0.16, step=0.01,
+    key="p2_k",
+    help="First-order rate for the steady-release P2"
+)
+
+st.sidebar.markdown("---")
+st.sidebar.info("💡 Adjust the sliders to explore how dissolution rate affects MDT/MRT, and how different profile shapes can yield similar MDT values.")
+
 # ── Generate Data ────────────────────────────────────────────────────────────
 @st.cache_data
-def get_data():
-    return generate_level_b_data()
+def get_data(kf, km, ks, p1b, p1bk, p2k):
+    return generate_level_b_data(k_fast=kf, k_medium=km, k_slow=ks,
+                                  p1_burst_frac=p1b, p1_burst_k=p1bk,
+                                  p2_k=p2k)
 
-data = get_data()
+data = get_data(k_fast, k_medium, k_slow, p1_burst, p1_burst_k, p2_k)
 
 # =============================================================================
 # Concept: MDT and MRT
@@ -83,7 +130,7 @@ st.markdown("---")
 # Step 1: Source Profiles
 # =============================================================================
 st.header("Step 1: Source Profiles")
-st.markdown("The same three formulations from the Level A scenario (ER oral tablet).")
+st.markdown("Three ER oral formulations with adjustable dissolution rates (use sidebar controls).")
 
 level_a_data = data['level_a_data']
 
@@ -183,8 +230,11 @@ nearly identical MDT values but very different dissolution profiles
 and consequently different PK behavior.
 
 Below: **P1** (biphasic — fast burst then slow) and **P2** (steady release)
-have similar MDT values, but their plasma profiles are visually distinct.
+may have similar MDT values, but their plasma profiles are visually distinct.
 Level B would rate them as equivalent — a misleading conclusion.
+
+*Adjust the P1 burst fraction and P2 dissolution rate in the sidebar
+to explore when MDT values converge despite different profile shapes.*
 """)
 
 path = data['pathological']
@@ -201,11 +251,13 @@ with col3:
 with col4:
     st.metric("P2 MRT", f"{path['MRT_P2']:.1f} h")
 
-st.warning("""
-⚠️ **Takeaway:** Level B correlation (MDT vs MRT) can be misleading because
-different dissolution profile shapes can produce the same mean value.
-This is why Level A (time-course mapping) is preferred for regulatory submissions.
-""")
+mdt_diff = abs(path['MDT_P1'] - path['MDT_P2'])
+if mdt_diff < 1.0:
+    st.warning(f"⚠️ **MDT difference = {mdt_diff:.1f} h** — nearly identical! Yet the profiles look very different. This demonstrates why Level B can be misleading.")
+elif mdt_diff < 2.0:
+    st.info(f"ℹ️ **MDT difference = {mdt_diff:.1f} h** — close but distinguishable. Try adjusting sliders to make them converge.")
+else:
+    st.info(f"ℹ️ **MDT difference = {mdt_diff:.1f} h** — clearly different. Adjust the P2 rate or P1 burst fraction in the sidebar to bring them closer and see the limitation.")
 
 # =============================================================================
 # Summary
