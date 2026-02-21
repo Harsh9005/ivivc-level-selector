@@ -144,7 +144,7 @@ with col3:
     Built with Streamlit and Python. All data is
     synthetic — safe for educational use.
 
-    *Developed at NUS Pharmacy.*
+    *Developed by Harshvardhan Modh.*
     """)
 
 st.markdown("---")
