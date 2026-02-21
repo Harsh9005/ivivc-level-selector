@@ -6,6 +6,9 @@ All data is synthetic/hypothetical for educational purposes only.
 
 import numpy as np
 
+# NumPy 2.0 removed np.trapz → np.trapezoid
+_trapz = getattr(np, 'trapezoid', None) or np.trapz
+
 
 def one_compartment_oral(t, dose, ka, ke, vd):
     """
@@ -138,7 +141,7 @@ def compute_auc(times, conc):
     float
         Area under the curve.
     """
-    return float(np.trapz(conc, times))
+    return float(_trapz(conc, times))
 
 
 def compute_aumc(times, conc):
@@ -161,7 +164,7 @@ def compute_aumc(times, conc):
     """
     times = np.asarray(times, dtype=float)
     conc = np.asarray(conc, dtype=float)
-    return float(np.trapz(times * conc, times))
+    return float(_trapz(times * conc, times))
 
 
 def compute_mrt(times, conc):

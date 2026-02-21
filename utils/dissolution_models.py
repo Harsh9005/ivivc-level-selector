@@ -6,6 +6,9 @@ All data is synthetic/hypothetical for educational purposes only.
 
 import numpy as np
 
+# NumPy 2.0 removed np.trapz → np.trapezoid
+_trapz = getattr(np, 'trapezoid', None) or np.trapz
+
 
 def first_order_release(t, k, f_max=100.0):
     """
@@ -140,7 +143,7 @@ def compute_de(times, release):
     times = np.asarray(times, dtype=float)
     release = np.asarray(release, dtype=float)
 
-    auc = np.trapz(release, times)
+    auc = _trapz(release, times)
     max_possible = release[-1] * (times[-1] - times[0])
 
     if max_possible == 0:
