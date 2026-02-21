@@ -106,7 +106,7 @@ st.markdown("---")
 st.header("Regulatory Context")
 
 st.info("""
-**FDA Guidance:** [Extended Release Oral Dosage Forms: IVIVC (1997)](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/extended-release-oral-dosage-forms-development-evaluation-and-application-vitrovivo-correlation)
+**FDA Guidance:** [Extended Release Oral Dosage Forms: IVIVC (1997)](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/extended-release-oral-dosage-forms-development-evaluation-and-application-vitroin-in-vivo-correlations)
 
 **EMA Guideline:** [Quality of Oral Modified Release Products (2014)](https://www.ema.europa.eu/en/documents/scientific-guideline/guideline-quality-oral-modified-release-products_en.pdf)
 
