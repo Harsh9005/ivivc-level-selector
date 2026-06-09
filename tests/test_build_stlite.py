@@ -52,3 +52,26 @@ def test_streamlit_config_maps_theme():
     assert cfg.get("client.toolbarMode") == "viewer"
     assert cfg.get("theme.primaryColor") == "#2196F3"
     assert cfg.get("theme.base", "light") in ("light", "dark")
+
+
+def test_render_html_contains_mount_and_embedded_files():
+    manifest = {"app.py": "import streamlit as st\nst.write('hi')\n",
+                "pages/1_🏠_Home.py": "import streamlit as st\n"}
+    html = b.render_html(manifest, ["scipy", "plotly"], "app.py",
+                         {"client.toolbarMode": "viewer"})
+    assert "@stlite/browser@0.85.1/build/stlite.js" in html
+    assert "@stlite/browser@0.85.1/build/stlite.css" in html
+    assert "mount(" in html
+    assert '"entrypoint"' in html or "entrypoint" in html
+    assert '<div id="root">' in html
+    # emoji page key survives embedding (as JSON-escaped unicode or literal)
+    assert ("1_🏠_Home.py" in html) or ("1_\\ud83c\\udfe0_Home.py" in html)
+    # loading overlay present
+    assert "stlite-loading" in html
+
+
+def test_render_html_is_valid_standalone():
+    manifest = {"app.py": "x = 1\n"}
+    html = b.render_html(manifest, [], "app.py", {})
+    assert html.strip().startswith("<!DOCTYPE html>")
+    assert html.rstrip().endswith("</html>")

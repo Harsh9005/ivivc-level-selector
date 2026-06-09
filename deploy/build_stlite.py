@@ -75,3 +75,81 @@ def streamlit_config(config_toml: Path) -> dict[str, str]:
         if key in theme:
             cfg[f"theme.{key}"] = theme[key]
     return cfg
+
+
+_HTML_TEMPLATE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IVIVC Level Selector</title>
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@stlite/browser@{version}/build/stlite.css" />
+  <style>
+    #stlite-loading {{
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 1rem;
+      font-family: sans-serif; color: #333; background: #ffffff; z-index: 9999;
+      transition: opacity .4s ease;
+    }}
+    #stlite-loading .spinner {{
+      width: 44px; height: 44px; border: 4px solid #e0e0e0;
+      border-top-color: #2196F3; border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }}
+    @keyframes spin {{ to {{ transform: rotate(360deg); }} }}
+    #stlite-loading small {{ color: #888; max-width: 22rem; text-align: center; }}
+  </style>
+</head>
+<body>
+  <div id="stlite-loading">
+    <div class="spinner"></div>
+    <div>💊 Loading IVIVC Level Selector…</div>
+    <small>First load downloads the Python runtime in your browser (~20–30s).
+    It then runs entirely offline — no server, never sleeps.</small>
+  </div>
+  <div id="root"></div>
+  <script type="module">
+    import {{ mount }} from
+      "https://cdn.jsdelivr.net/npm/@stlite/browser@{version}/build/stlite.js";
+
+    const APP = {payload};
+
+    mount(
+      {{
+        requirements: APP.requirements,
+        entrypoint: APP.entrypoint,
+        files: APP.files,
+        streamlitConfig: APP.streamlitConfig,
+      }},
+      document.getElementById("root"),
+    );
+
+    // Hide the loading overlay once Streamlit paints into #root.
+    const overlay = document.getElementById("stlite-loading");
+    const root = document.getElementById("root");
+    const obs = new MutationObserver(() => {{
+      if (root.querySelector("iframe, .stApp, [data-testid='stAppViewContainer']")) {{
+        overlay.style.opacity = "0";
+        setTimeout(() => overlay.remove(), 500);
+        obs.disconnect();
+      }}
+    }});
+    obs.observe(root, {{ childList: true, subtree: true }});
+    // Safety net: never trap the user behind the overlay.
+    setTimeout(() => {{ overlay.style.opacity = "0";
+      setTimeout(() => overlay.remove(), 500); }}, 90000);
+  </script>
+</body>
+</html>
+"""
+
+
+def render_html(files: dict[str, str], requirements: list[str],
+                entrypoint: str, config: dict[str, str]) -> str:
+    payload = json.dumps(
+        {"files": files, "requirements": requirements,
+         "entrypoint": entrypoint, "streamlitConfig": config},
+        ensure_ascii=True,
+    )
+    return _HTML_TEMPLATE.format(version=STLITE_VERSION, payload=payload)
