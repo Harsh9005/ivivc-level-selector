@@ -23,6 +23,15 @@ from utils.plotting import (
     plot_f1_f2_bars, _base_layout,
 )
 from utils.citations import references_for, reference_entry_markdown
+from utils.share import decode_scenario, encode_scenario, SCHEMAS, LEVEL_C_PRESETS
+
+# ── Seed slider state from the URL (once) ─────────────────────────────────────
+_SCHEMA = SCHEMAS["level_c"]
+if "_lc_seeded" not in st.session_state:
+    seeded = decode_scenario(dict(st.query_params), _SCHEMA)
+    for k, v in seeded.items():
+        st.session_state.setdefault(k, v)
+    st.session_state["_lc_seeded"] = True
 
 # ── Title ────────────────────────────────────────────────────────────────────
 st.title("📉 Level C IVIVC: Single-Point Correlations")
@@ -46,25 +55,47 @@ st.markdown("---")
 st.sidebar.header("⚙️ Level C Controls")
 
 st.sidebar.subheader("Formulation A (Low MW)")
-fmax_A = st.sidebar.slider("A: Max release (%)", 50, 100, 88, 2, key="fA")
-tau_A = st.sidebar.slider("A: Weibull τ (h)", 100, 600, 300, 25, key="tA",
+fmax_A = st.sidebar.slider("A: Max release (%)", 50, 100, st.session_state.get("fA", 88), 2, key="fA")
+tau_A = st.sidebar.slider("A: Weibull τ (h)", 100, 600, st.session_state.get("tA", 300), 25, key="tA",
                            help="Scale parameter — lower = faster release")
-burst_A = st.sidebar.slider("A: Burst (%)", 0.0, 30.0, 15.0, 1.0, key="bA")
+burst_A = st.sidebar.slider("A: Burst (%)", 0.0, 30.0, st.session_state.get("bA", 15.0), 1.0, key="bA")
 
 st.sidebar.markdown("---")
 st.sidebar.subheader("Formulation B (Med MW)")
-fmax_B = st.sidebar.slider("B: Max release (%)", 40, 90, 68, 2, key="fB")
-tau_B = st.sidebar.slider("B: Weibull τ (h)", 200, 700, 420, 25, key="tB")
-burst_B = st.sidebar.slider("B: Burst (%)", 0.0, 20.0, 7.0, 0.5, key="bB")
+fmax_B = st.sidebar.slider("B: Max release (%)", 40, 90, st.session_state.get("fB", 68), 2, key="fB")
+tau_B = st.sidebar.slider("B: Weibull τ (h)", 200, 700, st.session_state.get("tB", 420), 25, key="tB")
+burst_B = st.sidebar.slider("B: Burst (%)", 0.0, 20.0, st.session_state.get("bB", 7.0), 0.5, key="bB")
 
 st.sidebar.markdown("---")
 st.sidebar.subheader("Formulation C (High MW)")
-fmax_C = st.sidebar.slider("C: Max release (%)", 30, 80, 58, 2, key="fC")
-tau_C = st.sidebar.slider("C: Weibull τ (h)", 300, 800, 500, 25, key="tC")
-burst_C = st.sidebar.slider("C: Burst (%)", 0.0, 15.0, 4.5, 0.5, key="bC")
+fmax_C = st.sidebar.slider("C: Max release (%)", 30, 80, st.session_state.get("fC", 58), 2, key="fC")
+tau_C = st.sidebar.slider("C: Weibull τ (h)", 300, 800, st.session_state.get("tC", 500), 25, key="tC")
+burst_C = st.sidebar.slider("C: Burst (%)", 0.0, 15.0, st.session_state.get("bC", 4.5), 0.5, key="bC")
 
 st.sidebar.markdown("---")
 st.sidebar.info("💡 Adjust dissolution parameters to see how they affect correlations, R² heatmap, and f1/f2 similarity. Bringing B and C closer makes f2 → SIMILAR.")
+
+# ── Share / Save scenario ─────────────────────────────────────────────────────
+with st.sidebar.expander("🔗 Share / Save this scenario"):
+    _preset_choice = st.selectbox(
+        "Load preset scenario", ["—"] + list(LEVEL_C_PRESETS.keys()),
+        key="_lc_preset",
+    )
+    if _preset_choice != "—":
+        for _k, _v in LEVEL_C_PRESETS[_preset_choice].items():
+            st.session_state[_k] = _v
+        st.query_params.update({_k: str(st.session_state[_k]) for _k in _SCHEMA})
+        st.rerun()
+
+    if st.button("Update shareable link", key="_lc_share_btn"):
+        st.query_params.update({_k: str(st.session_state[_k]) for _k in _SCHEMA})
+        st.success("Your browser address bar now holds this scenario — copy the URL to share.")
+
+    st.caption("scenario code (paste into a shared link's `?...`)")
+    st.code(
+        encode_scenario({_k: st.session_state.get(_k, _d) for _k, (_t, _d) in _SCHEMA.items()}),
+        language="text",
+    )
 
 # ── Generate Data ────────────────────────────────────────────────────────────
 @st.cache_data
