@@ -12,7 +12,10 @@
 
 ## Live Demo
 
-🚀 **[Launch the App](https://ivivc-level-selector.streamlit.app)** *(Streamlit Community Cloud)*
+🚀 **[Launch the App](https://harsh9005.github.io/ivivc-level-selector)** — runs
+entirely in your browser via [stlite](https://github.com/whitphx/stlite)
+(Pyodide/WebAssembly). **Always-on, no server, never sleeps.** First load
+downloads the Python runtime (~20–30 s), then runs offline.
 
 ---
 
@@ -95,9 +98,22 @@ streamlit run app.py
 ```
 
 ### Requirements
-- Python 3.8+
+- Python 3.8+ to run with Streamlit; **Python 3.11+** to build the static stlite bundle (uses stdlib `tomllib`)
 - streamlit ≥ 1.28
-- numpy, scipy, plotly, pandas, matplotlib
+- numpy, scipy, plotly, pandas
+
+### Build & preview the always-on static bundle
+
+The live site is a static [stlite](https://github.com/whitphx/stlite) build that
+runs the same app fully in-browser (no server). To build and preview it locally:
+
+```bash
+python3 deploy/build_stlite.py        # writes dist/index.html
+python3 -m http.server 8000 -d dist   # open http://localhost:8000
+```
+
+Every push to `main` rebuilds this bundle and publishes it to GitHub Pages via
+`.github/workflows/deploy.yml` — so the live app stays current with zero manual steps.
 
 ---
 
