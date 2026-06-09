@@ -16,12 +16,20 @@ ENTRYPOINT = "app.py"
 
 # Directories whose .py files make up the app (relative to repo root).
 APP_DIRS = ("pages", "utils")
+# Directories whose runtime data files (JSON only) are bundled into the app's
+# virtual FS — e.g. content/references.json read by utils.citations at runtime.
+DATA_DIRS = ("content",)
 # Names/paths to never include.
 EXCLUDE_PARTS = ("__pycache__", ".git", "tests", "deploy", "docs")
 
 
 def collect_app_files(repo_root: Path) -> dict[str, str]:
-    """Return {posix_relpath: text} for app.py + pages/**.py + utils/**.py."""
+    """Return {posix_relpath: text} for app.py + pages/**.py + utils/**.py.
+
+    Also bundles runtime data (content/*.json, e.g. the verified reference
+    corpus) keyed by its repo-relative posix path. Dev-only markdown artifacts
+    such as content/claims_map.md are deliberately excluded.
+    """
     repo_root = Path(repo_root)
     manifest: dict[str, str] = {}
 
@@ -34,6 +42,18 @@ def collect_app_files(repo_root: Path) -> dict[str, str]:
         if not base.is_dir():
             continue
         for path in sorted(base.rglob("*.py")):
+            rel = path.relative_to(repo_root)
+            if any(part in EXCLUDE_PARTS for part in rel.parts):
+                continue
+            manifest[rel.as_posix()] = path.read_text(encoding="utf-8")
+
+    # Bundle runtime JSON data (e.g. content/references.json). Only *.json —
+    # *.md files are dev artifacts, not needed in the browser runtime.
+    for d in DATA_DIRS:
+        base = repo_root / d
+        if not base.is_dir():
+            continue
+        for path in sorted(base.rglob("*.json")):
             rel = path.relative_to(repo_root)
             if any(part in EXCLUDE_PARTS for part in rel.parts):
                 continue

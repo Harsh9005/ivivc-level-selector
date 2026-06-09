@@ -11,23 +11,41 @@ REPO = Path(__file__).resolve().parents[1]
 def test_collect_includes_entrypoint_and_emoji_pages():
     files = b.collect_app_files(REPO)
     assert "app.py" in files
-    # all five existing emoji-prefixed pages must be present, exact names
+    # all existing emoji-prefixed pages must be present, exact names
     expected_pages = [
         "pages/1_🏠_Home.py",
         "pages/2_🔍_Level_Selector.py",
         "pages/3_📈_Level_A_Demo.py",
         "pages/4_📊_Level_B_Demo.py",
         "pages/5_📉_Level_C_Demo.py",
+        "pages/8_📚_References.py",
     ]
     for p in expected_pages:
         assert p in files, f"missing {p}"
-    # util modules present
+    # util modules present (incl. the new citations module)
     for u in ["utils/deconvolution.py", "utils/ivivc_calculations.py",
               "utils/dissolution_models.py", "utils/pk_models.py",
-              "utils/synthetic_data.py", "utils/plotting.py"]:
+              "utils/synthetic_data.py", "utils/plotting.py",
+              "utils/citations.py"]:
         assert u in files, f"missing {u}"
     # file contents are real source, not empty
     assert "import streamlit" in files["app.py"]
+
+
+def test_collect_bundles_reference_corpus_json():
+    files = b.collect_app_files(REPO)
+    # the verified citation corpus must be embedded at its repo-relative posix path
+    assert "content/references.json" in files
+    parsed = json.loads(files["content/references.json"])
+    assert isinstance(parsed.get("references"), list)
+    assert parsed["references"]  # non-empty
+
+
+def test_collect_excludes_content_markdown():
+    files = b.collect_app_files(REPO)
+    # dev-only artifacts (claims_map.md) are NOT shipped to the runtime
+    assert "content/claims_map.md" not in files
+    assert not any(k.endswith(".md") for k in files)
 
 
 def test_collect_excludes_pycache_and_pyc():

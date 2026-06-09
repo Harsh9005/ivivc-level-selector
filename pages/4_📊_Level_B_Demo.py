@@ -19,6 +19,7 @@ from utils.plotting import (
     COLORS, plot_mdt_vs_mrt, plot_pathological_example,
     plot_dissolution_profiles, plot_pk_profiles, _base_layout,
 )
+from utils.citations import references_for, reference_entry_markdown
 
 # ── Title ────────────────────────────────────────────────────────────────────
 st.title("📊 Level B IVIVC: Statistical Moment Comparison")
@@ -31,7 +32,7 @@ and plasma profiles — specifically, **Mean Dissolution Time (MDT)** versus
 Unlike Level A, Level B does **not** map the entire time course.
 It reduces each profile to a single number, which means:
 - It **cannot predict** the shape of the plasma profile
-- It has **limited regulatory value** for biowaivers
+- It has **limited regulatory value** for biowaivers [1]
 - It is mainly useful as **supporting evidence** alongside other IVIVC levels
 """)
 
@@ -118,7 +119,7 @@ with col2:
 
     $$MRT = \\frac{AUMC}{AUC} = \\frac{\\int_0^\\infty t \\cdot C(t) \\, dt}{\\int_0^\\infty C(t) \\, dt}$$
 
-    Represents the **average time** drug molecules spend in the body.
+    Represents the **average time** drug molecules spend in the body. [12]
 
     - Faster absorption/elimination → lower MRT
     - Sustained release → higher MRT
@@ -225,7 +226,7 @@ st.markdown("---")
 st.header("Step 5: Limitation — Same MDT, Different PK")
 
 st.markdown("""
-**This is the key weakness of Level B.** Two formulations can have
+**This is the key weakness of Level B. [1]** Two formulations can have
 nearly identical MDT values but very different dissolution profiles
 and consequently different PK behavior.
 
@@ -281,4 +282,11 @@ Level A or C for a complete IVIVC strategy.
 """)
 
 st.markdown("---")
+
+_PAGE_REFS = ["yamaoka_1978", "fda_ivivc_1997", "usp_1088"]
+with st.expander("📚 Evidence & sources for this page"):
+    for _r in references_for(_PAGE_REFS):
+        st.markdown(reference_entry_markdown(_r))
+    st.caption("Full verified reference list with DOIs on the 📚 References page (sidebar).")
+
 st.caption("**Disclaimer:** All data shown is synthetic/hypothetical, generated from pharmacokinetic and dissolution mathematical models for educational purposes only.")

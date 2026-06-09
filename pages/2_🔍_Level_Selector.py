@@ -2,7 +2,13 @@
 Page 2: Level Selector — Interactive Decision Questionnaire
 """
 
+import os
+import sys
+
 import streamlit as st
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from utils.citations import references_for, reference_entry_markdown
 
 st.set_page_config(page_title="Level Selector — IVIVC", page_icon="🔍", layout="wide")
 
@@ -282,16 +288,26 @@ if st.button("🎯 Get Recommendation", type="primary", use_container_width=True
         # FDA guidance reference
         with st.expander("📚 Regulatory References"):
             st.markdown("""
-            - **FDA Guidance (1997):** Extended Release Oral Dosage Forms — Development, Evaluation, and Application of IVIVC
-            - **EMA Guideline (2014):** Quality of Oral Modified Release Products
-            - **USP <1088>:** In Vitro and In Vivo Evaluation of Dosage Forms
-            - **ICH Q8(R2):** Pharmaceutical Development — supports QbD approach with IVIVC
+            - **FDA Guidance (1997):** Extended Release Oral Dosage Forms — Development, Evaluation, and Application of IVIVC [1]
+            - **EMA Guideline (2014):** Quality of Oral Modified Release Products [2]
+            - **USP <1088>:** In Vitro and In Vivo Evaluation of Dosage Forms [3]
+            - **ICH Q8(R2):** Pharmaceutical Development — supports QbD approach with IVIVC [4]
 
             **Key FDA criteria for Level A validation:**
-            - Internal predictability: Mean |%PE| ≤ 10% for Cmax and AUC
+            - Internal predictability: Mean |%PE| ≤ 10% for Cmax and AUC [1]
             - Individual |%PE| ≤ 15% for each formulation
             - External validation recommended with a formulation not used in model development
             """)
 
 st.markdown("---")
+
+_PAGE_REFS = [
+    "fda_ivivc_1997", "ema_mr_2014", "usp_1088", "ich_q8r2",
+    "fda_supac_mr_1997", "fda_bcs_biowaiver", "amidon_bcs_1995",
+]
+with st.expander("📚 Evidence & sources for this page"):
+    for _r in references_for(_PAGE_REFS):
+        st.markdown(reference_entry_markdown(_r))
+    st.caption("Full verified reference list with DOIs on the 📚 References page (sidebar).")
+
 st.caption("**Disclaimer:** All data and recommendations are for educational purposes only. Regulatory submissions require validated IVIVC using real experimental data. Consult relevant FDA/EMA guidance documents for specific regulatory requirements.")

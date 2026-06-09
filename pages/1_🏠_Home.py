@@ -2,7 +2,13 @@
 Page 1: Home — IVIVC Overview and Introduction
 """
 
+import os
+import sys
+
 import streamlit as st
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from utils.citations import references_for, reference_entry_markdown
 
 st.set_page_config(page_title="Home — IVIVC", page_icon="🏠", layout="wide")
 
@@ -17,7 +23,7 @@ st.markdown("""
 **In Vitro–In Vivo Correlation (IVIVC)** establishes a predictive mathematical
 relationship between an *in vitro* property of a dosage form (typically the
 dissolution rate) and a relevant *in vivo* response (typically plasma drug
-concentration or bioavailability).
+concentration or bioavailability) [1, 3].
 
 IVIVC is a cornerstone of pharmaceutical development because it:
 - Reduces the need for costly and time-consuming bioequivalence studies
@@ -106,9 +112,13 @@ st.markdown("---")
 st.header("Regulatory Context")
 
 st.info("""
-**FDA Guidance:** [Extended Release Oral Dosage Forms: IVIVC (1997)](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/extended-release-oral-dosage-forms-development-evaluation-and-application-vitroin-in-vivo-correlations)
+**FDA Guidance:** [Extended Release Oral Dosage Forms: IVIVC (1997)](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/extended-release-oral-dosage-forms-development-evaluation-and-application-vitroin-in-vivo-correlations) [1]
 
-**EMA Guideline:** [Quality of Oral Modified Release Products (2014)](https://www.ema.europa.eu/en/documents/scientific-guideline/guideline-quality-oral-modified-release-products_en.pdf)
+**EMA Guideline:** [Quality of Oral Modified Release Products (2014)](https://www.ema.europa.eu/en/documents/scientific-guideline/guideline-quality-oral-modified-release-products_en.pdf) [2]
+
+**USP <1088>:** In Vitro and In Vivo Evaluation of Dosage Forms [3]
+
+**ICH Q8(R2):** Pharmaceutical Development (QbD) [4]
 
 These guidelines describe the development, evaluation, and application of IVIVC
 for modified-release dosage forms.
@@ -148,4 +158,11 @@ with col3:
     """)
 
 st.markdown("---")
+
+_PAGE_REFS = ["fda_ivivc_1997", "ema_mr_2014", "usp_1088", "ich_q8r2"]
+with st.expander("📚 Evidence & sources for this page"):
+    for _r in references_for(_PAGE_REFS):
+        st.markdown(reference_entry_markdown(_r))
+    st.caption("Full verified reference list with DOIs on the 📚 References page (sidebar).")
+
 st.caption("**Disclaimer:** All data shown is synthetic/hypothetical, generated from pharmacokinetic and dissolution mathematical models for educational purposes only. No real experimental data is included.")
