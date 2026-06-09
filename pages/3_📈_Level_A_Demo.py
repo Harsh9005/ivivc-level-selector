@@ -29,6 +29,15 @@ from utils.plotting import (
     plot_pe_validation, _base_layout,
 )
 from utils.citations import references_for, reference_entry_markdown
+from utils.share import decode_scenario, encode_scenario, SCHEMAS, LEVEL_A_PRESETS
+
+# ── Seed slider state from the URL (once) ─────────────────────────────────────
+_SCHEMA = SCHEMAS["level_a"]
+if "_la_seeded" not in st.session_state:
+    seeded = decode_scenario(dict(st.query_params), _SCHEMA)
+    for k, v in seeded.items():
+        st.session_state.setdefault(k, v)
+    st.session_state["_la_seeded"] = True
 
 
 # ── Title ────────────────────────────────────────────────────────────────────
@@ -51,22 +60,47 @@ st.sidebar.header("⚙️ Level A Controls")
 
 k_fast = st.sidebar.slider(
     "F1 (Fast) dissolution rate k (h⁻¹)",
-    min_value=0.10, max_value=0.60, value=0.30, step=0.02,
+    min_value=0.10, max_value=0.60,
+    step=0.02, key="k_fast",
     help="First-order dissolution rate constant for fast formulation"
 )
 k_medium = st.sidebar.slider(
     "F2 (Medium) dissolution rate k (h⁻¹)",
-    min_value=0.05, max_value=0.40, value=0.15, step=0.02,
+    min_value=0.05, max_value=0.40,
+    step=0.02, key="k_medium",
     help="First-order dissolution rate constant for medium formulation"
 )
 k_slow = st.sidebar.slider(
     "F3 (Slow) dissolution rate k (h⁻¹)",
-    min_value=0.02, max_value=0.25, value=0.08, step=0.01,
+    min_value=0.02, max_value=0.25,
+    step=0.01, key="k_slow",
     help="First-order dissolution rate constant for slow formulation"
 )
 
 st.sidebar.markdown("---")
 st.sidebar.info("💡 Adjust the sliders to see how dissolution rate affects PK and IVIVC correlation.")
+
+# ── Share / Save scenario ─────────────────────────────────────────────────────
+with st.sidebar.expander("🔗 Share / Save this scenario"):
+    _preset_choice = st.selectbox(
+        "Load preset scenario", ["—"] + list(LEVEL_A_PRESETS.keys()),
+        key="_la_preset",
+    )
+    if _preset_choice != "—":
+        for _k, _v in LEVEL_A_PRESETS[_preset_choice].items():
+            st.session_state[_k] = _v
+        st.query_params.update({_k: str(st.session_state[_k]) for _k in _SCHEMA})
+        st.rerun()
+
+    if st.button("Update shareable link", key="_la_share_btn"):
+        st.query_params.update({_k: str(st.session_state[_k]) for _k in _SCHEMA})
+        st.success("Your browser address bar now holds this scenario — copy the URL to share.")
+
+    st.caption("scenario code (paste into a shared link's `?...`)")
+    st.code(
+        encode_scenario({_k: st.session_state.get(_k, _d) for _k, (_t, _d) in _SCHEMA.items()}),
+        language="text",
+    )
 
 # ── Generate Data ────────────────────────────────────────────────────────────
 @st.cache_data
@@ -376,7 +410,8 @@ predictive power of Level A IVIVC.
 
 k_new = st.slider(
     "New formulation dissolution rate k (h⁻¹)",
-    min_value=0.02, max_value=0.60, value=0.20, step=0.02,
+    min_value=0.02, max_value=0.60,
+    step=0.02,
     key="k_new",
 )
 

@@ -20,6 +20,15 @@ from utils.plotting import (
     plot_dissolution_profiles, plot_pk_profiles, _base_layout,
 )
 from utils.citations import references_for, reference_entry_markdown
+from utils.share import decode_scenario, encode_scenario, SCHEMAS, LEVEL_B_PRESETS
+
+# ── Seed slider state from the URL (once) ─────────────────────────────────────
+_SCHEMA = SCHEMAS["level_b"]
+if "_lb_seeded" not in st.session_state:
+    seeded = decode_scenario(dict(st.query_params), _SCHEMA)
+    for k, v in seeded.items():
+        st.session_state.setdefault(k, v)
+    st.session_state["_lb_seeded"] = True
 
 # ── Title ────────────────────────────────────────────────────────────────────
 st.title("📊 Level B IVIVC: Statistical Moment Comparison")
@@ -44,18 +53,21 @@ st.sidebar.header("⚙️ Level B Controls")
 st.sidebar.subheader("ER Formulations")
 k_fast = st.sidebar.slider(
     "F1 (Fast) dissolution k (h⁻¹)",
-    min_value=0.10, max_value=0.60, value=0.30, step=0.02,
+    min_value=0.10, max_value=0.60,
+    step=0.02,
     key="b_kf",
     help="First-order dissolution rate constant"
 )
 k_medium = st.sidebar.slider(
     "F2 (Medium) dissolution k (h⁻¹)",
-    min_value=0.05, max_value=0.40, value=0.15, step=0.02,
+    min_value=0.05, max_value=0.40,
+    step=0.02,
     key="b_km",
 )
 k_slow = st.sidebar.slider(
     "F3 (Slow) dissolution k (h⁻¹)",
-    min_value=0.02, max_value=0.25, value=0.08, step=0.01,
+    min_value=0.02, max_value=0.25,
+    step=0.01,
     key="b_ks",
 )
 
@@ -63,25 +75,50 @@ st.sidebar.markdown("---")
 st.sidebar.subheader("Pathological Example")
 p1_burst = st.sidebar.slider(
     "P1 burst fraction (%)",
-    min_value=10.0, max_value=70.0, value=40.0, step=5.0,
+    min_value=10.0, max_value=70.0,
+    step=5.0,
     key="p1_burst",
     help="Fraction of dose released in the burst phase of biphasic P1"
 )
 p1_burst_k = st.sidebar.slider(
     "P1 burst rate (h⁻¹)",
-    min_value=0.5, max_value=5.0, value=2.0, step=0.25,
+    min_value=0.5, max_value=5.0,
+    step=0.25,
     key="p1_bk",
     help="Rate constant for the burst phase"
 )
 p2_k = st.sidebar.slider(
     "P2 steady dissolution k (h⁻¹)",
-    min_value=0.05, max_value=0.40, value=0.16, step=0.01,
+    min_value=0.05, max_value=0.40,
+    step=0.01,
     key="p2_k",
     help="First-order rate for the steady-release P2"
 )
 
 st.sidebar.markdown("---")
 st.sidebar.info("💡 Adjust the sliders to explore how dissolution rate affects MDT/MRT, and how different profile shapes can yield similar MDT values.")
+
+# ── Share / Save scenario ─────────────────────────────────────────────────────
+with st.sidebar.expander("🔗 Share / Save this scenario"):
+    _preset_choice = st.selectbox(
+        "Load preset scenario", ["—"] + list(LEVEL_B_PRESETS.keys()),
+        key="_lb_preset",
+    )
+    if _preset_choice != "—":
+        for _k, _v in LEVEL_B_PRESETS[_preset_choice].items():
+            st.session_state[_k] = _v
+        st.query_params.update({_k: str(st.session_state[_k]) for _k in _SCHEMA})
+        st.rerun()
+
+    if st.button("Update shareable link", key="_lb_share_btn"):
+        st.query_params.update({_k: str(st.session_state[_k]) for _k in _SCHEMA})
+        st.success("Your browser address bar now holds this scenario — copy the URL to share.")
+
+    st.caption("scenario code (paste into a shared link's `?...`)")
+    st.code(
+        encode_scenario({_k: st.session_state.get(_k, _d) for _k, (_t, _d) in _SCHEMA.items()}),
+        language="text",
+    )
 
 # ── Generate Data ────────────────────────────────────────────────────────────
 @st.cache_data
