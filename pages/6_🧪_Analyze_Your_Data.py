@@ -77,29 +77,31 @@ if "diss_text" not in st.session_state:
 if "pk_text" not in st.session_state:
     st.session_state["pk_text"] = ""
 
-# --- example loader + template downloads ------------------------------------
-btn_cols = st.columns([1, 1, 1, 1])
+# --- example loader + templates ---------------------------------------------
+# NOTE: st.download_button serves its payload via a media endpoint that does not
+# exist in stlite's static/WASM context (it 404s). Templates are shown as
+# copy-paste st.code blocks instead — st.code's copy button works client-side.
+btn_cols = st.columns([1, 1])
 with btn_cols[0]:
     if st.button("📥 Load example dataset", use_container_width=True,
                  help="Fill both inputs with a clearly synthetic 3-formulation example"):
         st.session_state["diss_text"] = example_dissolution_csv()
         st.session_state["pk_text"] = example_pk_csv()
 with btn_cols[1]:
-    st.download_button(
-        "⬇️ Dissolution template", dissolution_template_csv(),
-        file_name="dissolution_template.csv", mime="text/csv",
-        use_container_width=True,
-    )
-with btn_cols[2]:
-    st.download_button(
-        "⬇️ PK template", pk_template_csv(),
-        file_name="pk_template.csv", mime="text/csv",
-        use_container_width=True,
-    )
-with btn_cols[3]:
     if st.button("🗑️ Clear inputs", use_container_width=True):
         st.session_state["diss_text"] = ""
         st.session_state["pk_text"] = ""
+
+with st.expander("📋 CSV templates (copy-paste)"):
+    st.caption("Copy a template into the matching box below, then replace the "
+               "placeholder values with your own data.")
+    tcol1, tcol2 = st.columns(2)
+    with tcol1:
+        st.markdown("**Dissolution template**")
+        st.code(dissolution_template_csv(), language="text")
+    with tcol2:
+        st.markdown("**PK template**")
+        st.code(pk_template_csv(), language="text")
 
 col_d, col_p = st.columns(2)
 
