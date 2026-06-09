@@ -34,3 +34,14 @@ def test_collect_excludes_pycache_and_pyc():
     files = b.collect_app_files(REPO)
     assert not any("__pycache__" in k for k in files)
     assert not any(k.endswith(".pyc") for k in files)
+
+
+def test_derive_requirements_excludes_streamlit_and_matplotlib():
+    reqs = b.derive_requirements(REPO / "requirements.txt")
+    assert "streamlit" not in reqs
+    assert "matplotlib" not in reqs
+    # scipy + plotly are NOT streamlit deps → must be explicitly present
+    assert "scipy" in reqs
+    assert "plotly" in reqs
+    # version specifiers stripped to bare names
+    assert all("=" not in r and ">" not in r and "<" not in r for r in reqs)

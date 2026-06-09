@@ -37,3 +37,24 @@ def collect_app_files(repo_root: Path) -> dict[str, str]:
                 continue
             manifest[rel.as_posix()] = path.read_text(encoding="utf-8")
     return manifest
+
+
+import re
+
+# Provided by the stlite runtime or unused → never request via micropip.
+_OMIT_PACKAGES = {"streamlit", "matplotlib"}
+
+
+def derive_requirements(requirements_txt: Path) -> list[str]:
+    """Bare package names from requirements.txt, minus runtime-provided/unused."""
+    reqs: list[str] = []
+    for line in Path(requirements_txt).read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        # split off version specifiers / extras / markers
+        name = re.split(r"[<>=!~;\[ ]", line, maxsplit=1)[0].strip().lower()
+        if not name or name in _OMIT_PACKAGES:
+            continue
+        reqs.append(name)
+    return reqs
