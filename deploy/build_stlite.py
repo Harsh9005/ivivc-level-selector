@@ -7,6 +7,7 @@ app with the files embedded. Pure stdlib.
 from __future__ import annotations
 
 import json
+import re
 import tomllib
 from pathlib import Path
 
@@ -40,10 +41,10 @@ def collect_app_files(repo_root: Path) -> dict[str, str]:
     return manifest
 
 
-import re
-
 # Provided by the stlite runtime or unused → never request via micropip.
 _OMIT_PACKAGES = {"streamlit", "matplotlib"}
+# Phase-0 tuning point (Chunk 2): if the in-browser load shows a micropip version
+# conflict, add "numpy"/"pandas" here — stlite's Streamlit runtime pins them.
 
 
 def derive_requirements(requirements_txt: Path) -> list[str]:
@@ -151,7 +152,7 @@ def render_html(files: dict[str, str], requirements: list[str],
         {"files": files, "requirements": requirements,
          "entrypoint": entrypoint, "streamlitConfig": config},
         ensure_ascii=True,
-    )
+    ).replace("</", "<\\/")  # prevent </script> breakout when embedding in <script>
     return _HTML_TEMPLATE.format(version=STLITE_VERSION, payload=payload)
 
 

@@ -70,6 +70,16 @@ def test_render_html_contains_mount_and_embedded_files():
     assert "stlite-loading" in html
 
 
+def test_render_html_escapes_script_breakout():
+    manifest = {"app.py": "import streamlit as st\nst.markdown('</script><b>x</b>')\n"}
+    html = b.render_html(manifest, [], "app.py", {})
+    # the raw closing-script sequence must NOT appear inside the embedded payload
+    assert "</script><b>" not in html
+    assert "<\\/script>" in html  # escaped form is present
+    # and the real module script tag still closes exactly once at the end
+    assert html.count("</script>") == 1
+
+
 def test_render_html_is_valid_standalone():
     manifest = {"app.py": "x = 1\n"}
     html = b.render_html(manifest, [], "app.py", {})
