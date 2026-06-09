@@ -1,0 +1,190 @@
+{
+  "_meta": {
+    "description": "Verified citation corpus for the IVIVC Level Selector. Every entry was discovered via Consensus and independently cross-verified (papers: scite + refchecker across Semantic Scholar/OpenAlex/CrossRef; regulatory docs: official-domain confirmation). No reference is reconstructed from memory; no DOI/URL was fabricated.",
+    "verified_on": "2026-06-09",
+    "method": "Consensus discovery -> scite (DOI + retraction) + refchecker (S2/OpenAlex/CrossRef) for papers; official-URL fetch for regulatory docs",
+    "count": 15
+  },
+  "references": [
+    {
+      "key": "fda_ivivc_1997",
+      "type": "regulatory",
+      "authors": ["U.S. FDA, Center for Drug Evaluation and Research (CDER)"],
+      "title": "Guidance for Industry: Extended Release Oral Dosage Forms — Development, Evaluation, and Application of In Vitro/In Vivo Correlations",
+      "venue": "U.S. Food and Drug Administration (CDER)",
+      "year": 1997,
+      "doi": null,
+      "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/extended-release-oral-dosage-forms-development-evaluation-and-application-vitroin-in-vivo-correlations",
+      "verification": { "verified": true, "confidence": "high", "sources": ["fda.gov", "govinfo.gov (Federal Register, Sep 1997)"] },
+      "claims": ["G1", "G2", "G3", "G4", "A1", "A5", "A6", "B1", "B4", "C1", "C2", "C4"]
+    },
+    {
+      "key": "ema_mr_2014",
+      "type": "regulatory",
+      "authors": ["European Medicines Agency, CHMP / Quality Working Party"],
+      "title": "Guideline on quality of oral modified release products (EMA/CHMP/QWP/428693/2013)",
+      "venue": "European Medicines Agency (CHMP/QWP)",
+      "year": 2014,
+      "doi": null,
+      "url": "https://www.ema.europa.eu/en/documents/scientific-guideline/guideline-quality-oral-modified-release-products_en.pdf",
+      "verification": { "verified": true, "confidence": "high", "sources": ["ema.europa.eu (PDF front-matter confirmed)"] },
+      "claims": ["G1", "G3"]
+    },
+    {
+      "key": "usp_1088",
+      "type": "regulatory",
+      "authors": ["United States Pharmacopeial Convention"],
+      "title": "USP General Chapter <1088>: In Vitro and In Vivo Evaluation of Oral Dosage Forms",
+      "venue": "United States Pharmacopeia (USP–NF)",
+      "year": 2020,
+      "doi": null,
+      "url": "https://doi.usp.org/USPNF/USPNF_M99807_04_01.html",
+      "verification": { "verified": true, "confidence": "medium", "sources": ["doi.usp.org (header/metadata; full text paywalled)"] },
+      "claims": ["G1", "G3", "B3"]
+    },
+    {
+      "key": "ich_q8r2",
+      "type": "regulatory",
+      "authors": ["International Council for Harmonisation (ICH)"],
+      "title": "ICH Harmonised Tripartite Guideline Q8(R2): Pharmaceutical Development",
+      "venue": "International Council for Harmonisation (ICH)",
+      "year": 2009,
+      "doi": null,
+      "url": "https://database.ich.org/sites/default/files/Q8_R2_Guideline.pdf",
+      "verification": { "verified": true, "confidence": "high", "sources": ["database.ich.org (PDF title page confirmed, Step 4, Aug 2009)"] },
+      "claims": ["G5"]
+    },
+    {
+      "key": "fda_dissolution_ir_1997",
+      "type": "regulatory",
+      "authors": ["U.S. FDA, Center for Drug Evaluation and Research (CDER)"],
+      "title": "Guidance for Industry: Dissolution Testing of Immediate Release Solid Oral Dosage Forms",
+      "venue": "U.S. Food and Drug Administration (CDER)",
+      "year": 1997,
+      "doi": null,
+      "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/dissolution-testing-immediate-release-solid-oral-dosage-forms",
+      "verification": { "verified": true, "confidence": "high", "sources": ["fda.gov (domain-restricted search; title match)"] },
+      "claims": ["C3"]
+    },
+    {
+      "key": "fda_supac_mr_1997",
+      "type": "regulatory",
+      "authors": ["U.S. FDA, Center for Drug Evaluation and Research (CDER)"],
+      "title": "Guidance for Industry: SUPAC-MR — Modified Release Solid Oral Dosage Forms; Scale-Up and Postapproval Changes",
+      "venue": "U.S. Food and Drug Administration (CDER)",
+      "year": 1997,
+      "doi": null,
+      "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/supac-mr-modified-release-solid-oral-dosage-forms-scale-and-postapproval-changes-chemistry",
+      "verification": { "verified": true, "confidence": "high", "sources": ["fda.gov", "federalregister.gov (FR Oct 1997)"] },
+      "claims": ["G2", "G6"]
+    },
+    {
+      "key": "fda_bcs_biowaiver",
+      "type": "regulatory",
+      "authors": ["U.S. FDA, Center for Drug Evaluation and Research (CDER)"],
+      "title": "Guidance for Industry: Waiver of In Vivo Bioavailability and Bioequivalence Studies for Immediate-Release Solid Oral Dosage Forms Based on a Biopharmaceutics Classification System",
+      "venue": "U.S. Food and Drug Administration (CDER)",
+      "year": 2017,
+      "doi": null,
+      "url": "https://www.federalregister.gov/documents/2017/12/26/2017-27786/waiver-of-in-vivo-bioavailability-and-bioequivalence-studies-for-immediate-release-solid-oral-dosage",
+      "verification": { "verified": true, "confidence": "high", "sources": ["federalregister.gov (FR Dec 2017)", "hhs.gov", "collections.nlm.nih.gov"] },
+      "claims": ["BCS3"]
+    },
+    {
+      "key": "wagner_nelson_1963",
+      "type": "paper",
+      "authors": ["Wagner, J. G.", "Nelson, E."],
+      "title": "Percent absorbed time plots derived from blood level and/or urinary excretion data",
+      "venue": "Journal of Pharmaceutical Sciences",
+      "year": 1963,
+      "doi": "10.1002/jps.2600520629",
+      "url": "https://doi.org/10.1002/jps.2600520629",
+      "verification": { "verified": true, "confidence": "high", "sources": ["scite", "refchecker", "crossref", "openalex"] },
+      "claims": ["A2"]
+    },
+    {
+      "key": "loo_riegelman_1968",
+      "type": "paper",
+      "authors": ["Loo, J. C. K.", "Riegelman, S."],
+      "title": "New method for calculating the intrinsic absorption rate of drugs",
+      "venue": "Journal of Pharmaceutical Sciences",
+      "year": 1968,
+      "doi": "10.1002/jps.2600570602",
+      "url": "https://doi.org/10.1002/jps.2600570602",
+      "verification": { "verified": true, "confidence": "high", "sources": ["scite", "refchecker", "semantic-scholar"] },
+      "claims": ["A3"]
+    },
+    {
+      "key": "amidon_bcs_1995",
+      "type": "paper",
+      "authors": ["Amidon, G. L.", "Lennernäs, H.", "Shah, V. P.", "Crison, J. R."],
+      "title": "A theoretical basis for a biopharmaceutic drug classification: the correlation of in vitro drug product dissolution and in vivo bioavailability",
+      "venue": "Pharmaceutical Research",
+      "year": 1995,
+      "doi": "10.1023/A:1016212804288",
+      "url": "https://doi.org/10.1023/A:1016212804288",
+      "verification": { "verified": true, "confidence": "high", "sources": ["scite", "refchecker", "semantic-scholar"] },
+      "claims": ["BCS1", "BCS2", "BCS3", "BCS4"]
+    },
+    {
+      "key": "langenbucher_1972",
+      "type": "paper",
+      "authors": ["Langenbucher, F."],
+      "title": "Linearization of dissolution rate curves by the Weibull distribution",
+      "venue": "Journal of Pharmacy and Pharmacology",
+      "year": 1972,
+      "doi": "10.1111/j.2042-7158.1972.tb08930.x",
+      "url": "https://doi.org/10.1111/j.2042-7158.1972.tb08930.x",
+      "verification": { "verified": true, "confidence": "high", "sources": ["scite", "refchecker", "crossref"] },
+      "claims": ["C5"]
+    },
+    {
+      "key": "yamaoka_1978",
+      "type": "paper",
+      "authors": ["Yamaoka, K.", "Nakagawa, T.", "Uno, T."],
+      "title": "Statistical moments in pharmacokinetics",
+      "venue": "Journal of Pharmacokinetics and Biopharmaceutics",
+      "year": 1978,
+      "doi": "10.1007/BF01062109",
+      "url": "https://doi.org/10.1007/BF01062109",
+      "verification": { "verified": true, "confidence": "high", "sources": ["scite", "refchecker", "semantic-scholar", "crossref"] },
+      "claims": ["B2"]
+    },
+    {
+      "key": "shah_f2_1998",
+      "type": "paper",
+      "authors": ["Shah, V. P.", "Tsong, Y.", "Sathe, P. M.", "Liu, J. P."],
+      "title": "In vitro dissolution profile comparison — statistics and analysis of the similarity factor, f2",
+      "venue": "Pharmaceutical Research",
+      "year": 1998,
+      "doi": "10.1023/A:1011976615750",
+      "url": "https://doi.org/10.1023/A:1011976615750",
+      "verification": { "verified": true, "confidence": "high", "sources": ["scite", "refchecker", "crossref", "semantic-scholar"] },
+      "claims": ["C3"]
+    },
+    {
+      "key": "andhariya_2019",
+      "type": "paper",
+      "authors": ["Andhariya, J. V.", "Jog, R.", "Shen, J.", "Choi, S.", "Wang, Y.", "Zou, Y.", "Burgess, D. J."],
+      "title": "In vitro–in vivo correlation of parenteral PLGA microspheres: effect of variable burst release",
+      "venue": "Journal of Controlled Release",
+      "year": 2019,
+      "doi": "10.1016/j.jconrel.2019.10.014",
+      "url": "https://doi.org/10.1016/j.jconrel.2019.10.014",
+      "verification": { "verified": true, "confidence": "high", "sources": ["scite", "refchecker", "semantic-scholar", "crossref"] },
+      "claims": ["C5", "C1"]
+    },
+    {
+      "key": "wang_lai_2024",
+      "type": "paper",
+      "authors": ["Wang, Y.", "Otte, A.", "Park, H.", "Park, K."],
+      "title": "In vitro–in vivo correlation (IVIVC) development for long-acting injectable drug products based on poly(lactide-co-glycolide)",
+      "venue": "Journal of Controlled Release",
+      "year": 2025,
+      "doi": "10.1016/j.jconrel.2024.11.021",
+      "url": "https://doi.org/10.1016/j.jconrel.2024.11.021",
+      "verification": { "verified": true, "confidence": "high", "sources": ["scite", "refchecker", "crossref", "openalex"] },
+      "claims": ["C1", "C5"]
+    }
+  ]
+}
