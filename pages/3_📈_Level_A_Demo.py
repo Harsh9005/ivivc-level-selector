@@ -77,6 +77,17 @@ k_slow = st.sidebar.slider(
     help="First-order dissolution rate constant for slow formulation"
 )
 
+ke = st.sidebar.slider(
+    "Elimination rate kₑ (h⁻¹)",
+    min_value=0.05, max_value=0.30,
+    step=0.01, key="ke_a",
+    help="First-order elimination rate constant. Higher kₑ → faster clearance → lower exposure. Also used by Wagner-Nelson deconvolution.",
+)
+st.sidebar.caption(
+    "Default kₑ = 0.10 h⁻¹ reproduces the reference scenario. "
+    "Changing kₑ updates the PK profiles, Wagner-Nelson deconvolution, and %PE live."
+)
+
 st.sidebar.markdown("---")
 st.sidebar.info("💡 Adjust the sliders to see how dissolution rate affects PK and IVIVC correlation.")
 
@@ -104,10 +115,10 @@ with st.sidebar.expander("🔗 Share / Save this scenario"):
 
 # ── Generate Data ────────────────────────────────────────────────────────────
 @st.cache_data
-def get_data(kf, km, ks):
-    return generate_level_a_data(k_fast=kf, k_medium=km, k_slow=ks)
+def get_data(kf, km, ks, ke):
+    return generate_level_a_data(k_fast=kf, k_medium=km, k_slow=ks, ke=ke)
 
-data = get_data(k_fast, k_medium, k_slow)
+data = get_data(k_fast, k_medium, k_slow, ke)
 
 
 # =============================================================================
@@ -156,9 +167,11 @@ st.markdown("""
 Plasma concentration-time profiles generated via a **1-compartment oral model**.
 Absorption rate is proportional to dissolution rate (dissolution rate-limited
 absorption — typical for BCS Class II compounds).
-
-**PK Parameters:** ke = 0.10 h⁻¹, Vd = 50 L, Dose = 100 mg
 """)
+st.markdown(
+    f"**PK Parameters:** kₑ = {data['ke']:.2f} h⁻¹ "
+    f"(slider; default 0.10), Vd = {data['vd']:.0f} L, Dose = {data['dose']:.0f} mg"
+)
 
 fig_pk = plot_pk_profiles(
     data['times_pk'],
