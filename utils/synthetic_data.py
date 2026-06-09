@@ -23,12 +23,12 @@ from .deconvolution import wagner_nelson
 # Level A — Extended-Release Oral Tablet Scenario
 # =============================================================================
 
-def generate_level_a_data(k_fast=0.30, k_medium=0.15, k_slow=0.08):
+def generate_level_a_data(k_fast=0.30, k_medium=0.15, k_slow=0.08, ke=0.10):
     """
     Generate synthetic Level A data: 3 ER oral formulations + IR reference.
 
     Drug: "Compound Y" — BCS Class II, 1-compartment PK
-    - ke = 0.10 h⁻¹ (elimination)
+    - ke = 0.10 h⁻¹ (elimination, default — adjustable)
     - Vd = 50 L
     - Dose = 100 mg
 
@@ -40,6 +40,11 @@ def generate_level_a_data(k_fast=0.30, k_medium=0.15, k_slow=0.08):
         Dissolution rate constant for medium formulation (h⁻¹).
     k_slow : float
         Dissolution rate constant for slow formulation (h⁻¹).
+    ke : float
+        First-order elimination rate constant (h⁻¹). Drives both the
+        1-compartment PK generation and the Wagner-Nelson deconvolution.
+        The default of 0.10 reproduces the reference scenario; higher
+        values give faster clearance → lower exposure.
 
     Returns
     -------
@@ -50,7 +55,6 @@ def generate_level_a_data(k_fast=0.30, k_medium=0.15, k_slow=0.08):
         'pk_params', 'dissolution_params', 'ke'
     """
     # PK parameters
-    ke = 0.10   # h⁻¹
     vd = 50.0   # L
     dose = 100.0  # mg
 
