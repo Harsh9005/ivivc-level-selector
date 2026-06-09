@@ -196,8 +196,11 @@ biowaiver / SUPAC-MR.
 
 ### 5.1 Upload-your-own-data mode (`6_Analyze_Your_Data.py` + `utils/data_io.py`)
 - Inputs: dissolution CSV (`time`, one `%released` column per formulation) and
-  PK CSV (`time`, one `conc` column per formulation; plus `ke` or reference
-  data for deconvolution). Downloadable templates + example datasets.
+  PK CSV (`time`, one `conc` column per formulation). Deconvolution path is
+  pinned in the Phase 3 plan: Wagner–Nelson (`wagner_nelson(times, conc, ke)`)
+  needs only `ke` (no IV reference required, per its docstring); the numerical
+  path needs an impulse response. Upload mode collects whichever the chosen path
+  requires. Downloadable templates + example datasets included.
 - Runs the **real** existing science on user data: Wagner–Nelson deconvolution,
   Level A regression + %PE (FDA criteria), Level B MDT/MRT, Level C heatmap +
   f1/f2.
@@ -277,9 +280,8 @@ the umbrella vision. Implementation begins with Phase 0 + Phase 1.
 | Risk | Mitigation |
 |---|---|
 | stlite first-load too slow | Trim deps (drop matplotlib), pin versions, loading screen; measure in Phase 0 |
-| `file_uploader`/`query_params` unsupported in stlite | Verify in Phase 0 spike before building features that depend on them |
+| `file_uploader` / `query_params` unsupported in stlite | Phase 0 hard gate; fallbacks = paste-CSV `text_area` / copyable scenario-code string |
+| Emoji / non-ASCII page filenames break stlite bundling or static fetch | Verify in Phase 0; fallback = ASCII filenames + `st.Page` title overrides |
 | Citation fabrication / unreliable refs | Consensus + scite + refchecker verification; QC gate; no semanticSearch |
 | plotly/altair version clash in Pyodide | App uses plotly only; pin compatible versions |
 | Large synthetic computations slow in-browser | Keep timeframes/point counts modest; cache with `st.cache_data` |
-| Emoji / non-ASCII page filenames break stlite bundling or static fetch | Verify in Phase 0; fallback = ASCII filenames + `st.Page` title overrides |
-| `file_uploader` / `query_params` unsupported in stlite | Phase 0 gate; fallbacks = paste-CSV `text_area` / copyable scenario-code string |
