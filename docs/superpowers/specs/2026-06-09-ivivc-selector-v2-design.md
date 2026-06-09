@@ -87,19 +87,23 @@ static bundle via stlite (Pyodide/WebAssembly) to GitHub Pages.**
 ivivc-level-selector/
 ├── app.py                       # Streamlit entrypoint (unchanged role)
 ├── pages/                       # Multipage UI (existing + new)
-│   ├── 1_Home.py                # + inline citations, evidence callouts
-│   ├── 2_Level_Selector.py      # + query-param save/share, citations
-│   ├── 3_Level_A_Demo.py        # + richer widgets, citations
-│   ├── 4_Level_B_Demo.py        # + richer widgets, citations
-│   ├── 5_Level_C_Demo.py        # + richer widgets, citations
-│   ├── 6_Analyze_Your_Data.py   # NEW — upload-your-own-data mode
-│   ├── 7_Guided_Mode.py         # NEW — guided walkthrough + quizzes
-│   └── 8_References.py          # NEW — verified reference library
+│   ├── 1_🏠_Home.py             # + inline citations, evidence callouts
+│   ├── 2_🔍_Level_Selector.py   # + query-param save/share, citations
+│   ├── 3_📈_Level_A_Demo.py     # + richer widgets, citations
+│   ├── 4_📊_Level_B_Demo.py     # + richer widgets, citations
+│   ├── 5_📉_Level_C_Demo.py     # + richer widgets, citations
+│   ├── 6_🧪_Analyze_Your_Data.py # NEW — upload-your-own-data mode
+│   ├── 7_🧭_Guided_Mode.py      # NEW — guided walkthrough + quizzes
+│   └── 8_📚_References.py        # NEW — verified reference library
+│   # Existing pages use emoji filename prefixes (Streamlit derives nav
+│   # label/order from the filename); v2 KEEPS this convention. Phase 0 MUST
+│   # confirm stlite bundles/serves non-ASCII (emoji) filenames cleanly; if not,
+│   # fall back to ASCII filenames + st.Page title overrides.
 ├── utils/                       # Science core (pure functions, testable)
-│   ├── dissolution_models.py    # (existing)
-│   ├── pk_models.py             # (existing)
-│   ├── deconvolution.py         # (existing) Wagner–Nelson
-│   ├── ivivc_calculations.py    # (existing) Level A/B/C, %PE, f1/f2
+│   ├── dissolution_models.py    # (existing) dissolution models + f1/f2 + MDT (compute_f1_f2, compute_mdt, compute_de)
+│   ├── pk_models.py             # (existing) PK models + moments (compute_mrt, compute_auc, compute_aumc)
+│   ├── deconvolution.py         # (existing) Wagner–Nelson (wagner_nelson)
+│   ├── ivivc_calculations.py    # (existing) Level A/C correlation, %PE, Level C matrix — NOT Level B / f1f2
 │   ├── synthetic_data.py        # (existing)
 │   ├── plotting.py              # (existing)
 │   ├── data_io.py               # NEW — CSV parse/validate for upload mode
@@ -136,6 +140,16 @@ ivivc-level-selector/
 3. Action publishes `dist/` to GitHub Pages → `https://harsh9005.github.io/ivivc-level-selector`.
 4. Result: **always-on, $0, never sleeps, zero manual steps.**
 
+> **CLIENT-ONLY INVARIANT (load-bearing — this is what makes "never sleeps" true).**
+> There is no server process anywhere. The page is static files on a CDN and the
+> entire app runs in the browser via WebAssembly. Therefore **no feature may
+> depend on a server round-trip / API call.** Every asset (`references.json`,
+> example datasets, app `.py` files) is a **same-origin static file** served by
+> GitHub Pages and either bundled into the mount or fetched from the same Pages
+> origin at boot. Any "fetched at runtime" file in this spec means *same-origin
+> static fetch*, never a backend. Phase 2/3 implementers must not introduce an
+> external API; user data in upload mode stays in the browser.
+
 ---
 
 ## 4. Cited Evidence Layer (Requirement 2)
@@ -151,6 +165,11 @@ ivivc-level-selector/
    doi, url, verified: true/false, verification_source, claim_keys[]}`.
 5. **Citation QC pass** before ship: every reference resolves, no fabrications,
    each inline claim maps to a verified entry (`claims_map.md`).
+
+> The Phase 2 plan MUST build `claims_map.md` (claim → reference key) **alongside
+> the writing**, so a reference *count* (e.g., "37 refs") can never substitute for
+> claim *coverage*. "Verified citations" is success criterion #2 and a CRITICAL
+> user rule — coverage is the bar, not volume.
 
 The `writing-orchestrator` skill is used for its **research + citation-quality
 discipline**, not its DOCX/manuscript output stage.
@@ -219,7 +238,21 @@ biowaiver / SUPAC-MR.
 
 ## 7. Phasing (each phase ends in a verified, live deploy)
 - **Phase 0 — Feasibility spike:** mount current app in stlite; confirm scipy +
-  plotly + multipage + `file_uploader` + `query_params` in-browser. *(de-risk)*
+  plotly + multipage in-browser. *(de-risk)* **Explicit pass/fail gates + named
+  fallbacks** (each capability is a hard gate before the feature that needs it):
+  - *plotly renders & scipy/numpy compute in-browser* — **hard gate**; no
+    fallback (if this fails the whole stlite approach is wrong → escalate).
+  - *multipage nav works* — gate; fallback = single-page app with a radio/selectbox
+    page switcher.
+  - *emoji (non-ASCII) filenames bundle/serve cleanly* — gate; fallback = ASCII
+    filenames + `st.Page` title overrides.
+  - *`st.file_uploader` works in-browser* — gate for §5.1 upload mode; **fallback
+    = paste-CSV-into-`st.text_area`** (same `data_io` parser downstream).
+  - *`st.query_params` round-trips* — gate for §5.2 save/share; **fallback =
+    encode scenario to a copyable code string the user pastes into a "Load
+    scenario" box** (no URL dependency).
+  Phase 0 exits only when every gate is either PASS or has its fallback chosen
+  and recorded; record results in the Phase 0 plan/notes.
 - **Phase 1 — Re-platform + auto-deploy:** stlite bundle + GitHub Actions →
   **permanently live on GitHub Pages.** *(solves the #1 pain immediately)*
 - **Phase 2 — Cited evidence layer:** research → verify → `references.json` →
@@ -248,3 +281,5 @@ the umbrella vision. Implementation begins with Phase 0 + Phase 1.
 | Citation fabrication / unreliable refs | Consensus + scite + refchecker verification; QC gate; no semanticSearch |
 | plotly/altair version clash in Pyodide | App uses plotly only; pin compatible versions |
 | Large synthetic computations slow in-browser | Keep timeframes/point counts modest; cache with `st.cache_data` |
+| Emoji / non-ASCII page filenames break stlite bundling or static fetch | Verify in Phase 0; fallback = ASCII filenames + `st.Page` title overrides |
+| `file_uploader` / `query_params` unsupported in stlite | Phase 0 gate; fallbacks = paste-CSV `text_area` / copyable scenario-code string |
