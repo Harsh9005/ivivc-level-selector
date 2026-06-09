@@ -75,3 +75,15 @@ def test_render_html_is_valid_standalone():
     html = b.render_html(manifest, [], "app.py", {})
     assert html.strip().startswith("<!DOCTYPE html>")
     assert html.rstrip().endswith("</html>")
+
+
+def test_main_writes_dist_index(tmp_path, monkeypatch):
+    # build into a temp dist by pointing main at the real repo but temp out
+    out = tmp_path / "dist"
+    b.build(REPO, out)
+    index = out / "index.html"
+    assert index.is_file()
+    text = index.read_text(encoding="utf-8")
+    assert text.startswith("<!DOCTYPE html>")
+    assert "mount(" in text
+    assert len(text) > 5000  # embeds real app source → not trivial

@@ -153,3 +153,26 @@ def render_html(files: dict[str, str], requirements: list[str],
         ensure_ascii=True,
     )
     return _HTML_TEMPLATE.format(version=STLITE_VERSION, payload=payload)
+
+
+def build(repo_root: Path, out_dir: Path) -> Path:
+    repo_root, out_dir = Path(repo_root), Path(out_dir)
+    files = collect_app_files(repo_root)
+    reqs = derive_requirements(repo_root / "requirements.txt")
+    cfg = streamlit_config(repo_root / ".streamlit" / "config.toml")
+    html = render_html(files, reqs, ENTRYPOINT, cfg)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    index = out_dir / "index.html"
+    index.write_text(html, encoding="utf-8")
+    print(f"[build_stlite] {len(files)} files, "
+          f"{len(html):,} bytes -> {index}")
+    return index
+
+
+def main() -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    build(repo_root, repo_root / "dist")
+
+
+if __name__ == "__main__":
+    main()
