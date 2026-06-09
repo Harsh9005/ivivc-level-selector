@@ -7,6 +7,7 @@ app with the files embedded. Pure stdlib.
 from __future__ import annotations
 
 import json
+import tomllib
 from pathlib import Path
 
 STLITE_VERSION = "0.85.1"
@@ -58,3 +59,19 @@ def derive_requirements(requirements_txt: Path) -> list[str]:
             continue
         reqs.append(name)
     return reqs
+
+
+def streamlit_config(config_toml: Path) -> dict[str, str]:
+    """Flat stlite streamlitConfig dict, carrying the existing [theme]."""
+    cfg: dict[str, str] = {"client.toolbarMode": "viewer"}
+    p = Path(config_toml)
+    if not p.is_file():
+        return cfg
+    data = tomllib.loads(p.read_text(encoding="utf-8"))
+    theme = data.get("theme", {})
+    cfg["theme.base"] = "light"
+    for key in ("primaryColor", "backgroundColor",
+                "secondaryBackgroundColor", "textColor", "font"):
+        if key in theme:
+            cfg[f"theme.{key}"] = theme[key]
+    return cfg

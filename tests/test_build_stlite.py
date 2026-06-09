@@ -45,3 +45,10 @@ def test_derive_requirements_excludes_streamlit_and_matplotlib():
     assert "plotly" in reqs
     # version specifiers stripped to bare names
     assert all("=" not in r and ">" not in r and "<" not in r for r in reqs)
+
+
+def test_streamlit_config_maps_theme():
+    cfg = b.streamlit_config(REPO / ".streamlit" / "config.toml")
+    assert cfg.get("client.toolbarMode") == "viewer"
+    assert cfg.get("theme.primaryColor") == "#2196F3"
+    assert cfg.get("theme.base", "light") in ("light", "dark")
