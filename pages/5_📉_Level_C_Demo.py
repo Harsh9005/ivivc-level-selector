@@ -55,22 +55,22 @@ st.markdown("---")
 st.sidebar.header("⚙️ Level C Controls")
 
 st.sidebar.subheader("Formulation A (Low MW)")
-fmax_A = st.sidebar.slider("A: Max release (%)", 50, 100, st.session_state.get("fA", 88), 2, key="fA")
-tau_A = st.sidebar.slider("A: Weibull τ (h)", 100, 600, st.session_state.get("tA", 300), 25, key="tA",
+fmax_A = st.sidebar.slider("A: Max release (%)", 50, 100, step=2, key="fA")
+tau_A = st.sidebar.slider("A: Weibull τ (h)", 100, 600, step=25, key="tA",
                            help="Scale parameter — lower = faster release")
-burst_A = st.sidebar.slider("A: Burst (%)", 0.0, 30.0, st.session_state.get("bA", 15.0), 1.0, key="bA")
+burst_A = st.sidebar.slider("A: Burst (%)", 0.0, 30.0, step=1.0, key="bA")
 
 st.sidebar.markdown("---")
 st.sidebar.subheader("Formulation B (Med MW)")
-fmax_B = st.sidebar.slider("B: Max release (%)", 40, 90, st.session_state.get("fB", 68), 2, key="fB")
-tau_B = st.sidebar.slider("B: Weibull τ (h)", 200, 700, st.session_state.get("tB", 420), 25, key="tB")
-burst_B = st.sidebar.slider("B: Burst (%)", 0.0, 20.0, st.session_state.get("bB", 7.0), 0.5, key="bB")
+fmax_B = st.sidebar.slider("B: Max release (%)", 40, 90, step=2, key="fB")
+tau_B = st.sidebar.slider("B: Weibull τ (h)", 200, 700, step=25, key="tB")
+burst_B = st.sidebar.slider("B: Burst (%)", 0.0, 20.0, step=0.5, key="bB")
 
 st.sidebar.markdown("---")
 st.sidebar.subheader("Formulation C (High MW)")
-fmax_C = st.sidebar.slider("C: Max release (%)", 30, 80, st.session_state.get("fC", 58), 2, key="fC")
-tau_C = st.sidebar.slider("C: Weibull τ (h)", 300, 800, st.session_state.get("tC", 500), 25, key="tC")
-burst_C = st.sidebar.slider("C: Burst (%)", 0.0, 15.0, st.session_state.get("bC", 4.5), 0.5, key="bC")
+fmax_C = st.sidebar.slider("C: Max release (%)", 30, 80, step=2, key="fC")
+tau_C = st.sidebar.slider("C: Weibull τ (h)", 300, 800, step=25, key="tC")
+burst_C = st.sidebar.slider("C: Burst (%)", 0.0, 15.0, step=0.5, key="bC")
 
 st.sidebar.markdown("---")
 st.sidebar.info("💡 Adjust dissolution parameters to see how they affect correlations, R² heatmap, and f1/f2 similarity. Bringing B and C closer makes f2 → SIMILAR.")

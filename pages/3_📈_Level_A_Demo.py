@@ -61,19 +61,19 @@ st.sidebar.header("⚙️ Level A Controls")
 k_fast = st.sidebar.slider(
     "F1 (Fast) dissolution rate k (h⁻¹)",
     min_value=0.10, max_value=0.60,
-    value=st.session_state.get("k_fast", 0.30), step=0.02, key="k_fast",
+    step=0.02, key="k_fast",
     help="First-order dissolution rate constant for fast formulation"
 )
 k_medium = st.sidebar.slider(
     "F2 (Medium) dissolution rate k (h⁻¹)",
     min_value=0.05, max_value=0.40,
-    value=st.session_state.get("k_medium", 0.15), step=0.02, key="k_medium",
+    step=0.02, key="k_medium",
     help="First-order dissolution rate constant for medium formulation"
 )
 k_slow = st.sidebar.slider(
     "F3 (Slow) dissolution rate k (h⁻¹)",
     min_value=0.02, max_value=0.25,
-    value=st.session_state.get("k_slow", 0.08), step=0.01, key="k_slow",
+    step=0.01, key="k_slow",
     help="First-order dissolution rate constant for slow formulation"
 )
 
@@ -411,7 +411,7 @@ predictive power of Level A IVIVC.
 k_new = st.slider(
     "New formulation dissolution rate k (h⁻¹)",
     min_value=0.02, max_value=0.60,
-    value=st.session_state.get("k_new", 0.20), step=0.02,
+    step=0.02,
     key="k_new",
 )
 

@@ -54,20 +54,20 @@ st.sidebar.subheader("ER Formulations")
 k_fast = st.sidebar.slider(
     "F1 (Fast) dissolution k (h⁻¹)",
     min_value=0.10, max_value=0.60,
-    value=st.session_state.get("b_kf", 0.30), step=0.02,
+    step=0.02,
     key="b_kf",
     help="First-order dissolution rate constant"
 )
 k_medium = st.sidebar.slider(
     "F2 (Medium) dissolution k (h⁻¹)",
     min_value=0.05, max_value=0.40,
-    value=st.session_state.get("b_km", 0.15), step=0.02,
+    step=0.02,
     key="b_km",
 )
 k_slow = st.sidebar.slider(
     "F3 (Slow) dissolution k (h⁻¹)",
     min_value=0.02, max_value=0.25,
-    value=st.session_state.get("b_ks", 0.08), step=0.01,
+    step=0.01,
     key="b_ks",
 )
 
@@ -76,21 +76,21 @@ st.sidebar.subheader("Pathological Example")
 p1_burst = st.sidebar.slider(
     "P1 burst fraction (%)",
     min_value=10.0, max_value=70.0,
-    value=st.session_state.get("p1_burst", 40.0), step=5.0,
+    step=5.0,
     key="p1_burst",
     help="Fraction of dose released in the burst phase of biphasic P1"
 )
 p1_burst_k = st.sidebar.slider(
     "P1 burst rate (h⁻¹)",
     min_value=0.5, max_value=5.0,
-    value=st.session_state.get("p1_bk", 2.0), step=0.25,
+    step=0.25,
     key="p1_bk",
     help="Rate constant for the burst phase"
 )
 p2_k = st.sidebar.slider(
     "P2 steady dissolution k (h⁻¹)",
     min_value=0.05, max_value=0.40,
-    value=st.session_state.get("p2_k", 0.16), step=0.01,
+    step=0.01,
     key="p2_k",
     help="First-order rate for the steady-release P2"
 )
