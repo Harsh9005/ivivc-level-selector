@@ -142,12 +142,14 @@ def decode_scenario(query_string_or_dict, schema: dict) -> dict:
 # =============================================================================
 
 # Level A — pages/3_📈_Level_A_Demo.py
-#   k_fast/k_medium/k_slow: ER dissolution rates; k_new: "new formulation" rate.
+#   k_fast/k_medium/k_slow: ER dissolution rates; k_new: "new formulation" rate;
+#   ke_a: elimination rate constant (drives PK + Wagner-Nelson).
 SCHEMA_LEVEL_A = {
     "k_fast": ("float", 0.30),    # min 0.10  max 0.60  step 0.02
     "k_medium": ("float", 0.15),  # min 0.05  max 0.40  step 0.02
     "k_slow": ("float", 0.08),    # min 0.02  max 0.25  step 0.01
     "k_new": ("float", 0.20),     # min 0.02  max 0.60  step 0.02
+    "ke_a": ("float", 0.10),      # min 0.05  max 0.30  step 0.01
 }
 
 # Level B — pages/4_📊_Level_B_Demo.py
@@ -189,14 +191,18 @@ SCHEMAS = {
 LEVEL_A_PRESETS = {
     "Well-correlated (default)": {
         "k_fast": 0.30, "k_medium": 0.15, "k_slow": 0.08, "k_new": 0.20,
+        "ke_a": 0.10,
     },
     "Fast vs slow extremes": {
         # Push F1 to the top of its range and F3 to the bottom for a wide spread.
         "k_fast": 0.60, "k_medium": 0.20, "k_slow": 0.02, "k_new": 0.40,
+        "ke_a": 0.10,
     },
-    "Near-identical formulations": {
-        # All three ER rates bunched together — minimal between-formulation spread.
-        "k_fast": 0.16, "k_medium": 0.15, "k_slow": 0.14, "k_new": 0.15,
+    "Slow elimination (kₑ=0.06)": {
+        # Same well-correlated dissolution set, but slower clearance → higher,
+        # more sustained exposure. Demonstrates how kₑ reshapes the PK profiles.
+        "k_fast": 0.30, "k_medium": 0.15, "k_slow": 0.08, "k_new": 0.20,
+        "ke_a": 0.06,
     },
 }
 
