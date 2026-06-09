@@ -28,6 +28,7 @@ from utils.plotting import (
     plot_absorption_vs_dissolution, plot_level_a_correlation,
     plot_pe_validation, _base_layout,
 )
+from utils.citations import references_for, reference_entry_markdown
 
 
 # ── Title ────────────────────────────────────────────────────────────────────
@@ -38,7 +39,7 @@ in vitro dissolution profile and the *entire* in vivo absorption profile.
 It is the most informative level and the only one that can predict complete
 plasma concentration-time profiles from dissolution data alone.
 
-**Synthetic Scenario:** Extended-release oral tablet containing a BCS Class II
+**Synthetic Scenario:** Extended-release oral tablet containing a BCS Class II [10]
 model compound. Three formulations (F1–F3) with different release rates,
 plus an immediate-release (IR) reference.
 """)
@@ -155,13 +156,14 @@ st.markdown("---")
 st.header("Step 3: Deconvolution — Fraction Absorbed")
 
 st.markdown("""
-**Wagner-Nelson method** extracts the in vivo fraction absorbed (Fa) from
+**Wagner-Nelson method [8]** extracts the in vivo fraction absorbed (Fa) from
 plasma concentration data, using only the elimination rate constant (ke):
 
 $$F_a(t) = \\frac{C(t) + k_e \\cdot AUC(0,t)}{k_e \\cdot AUC(0,\\infty)}$$
 
 This method requires only a **1-compartment model** assumption and does not
-need IV reference data — making it practical for most oral drug products.
+need IV reference data [8] (for two-compartment drugs, the Loo–Riegelman
+method [9] is used instead) — making it practical for most oral drug products.
 """)
 
 # Let user pick a formulation to examine
@@ -272,7 +274,7 @@ dissolution data. Prediction accuracy is assessed via **%PE**:
 
 $$\\%PE = \\frac{Predicted - Observed}{Observed} \\times 100$$
 
-**FDA Criteria:**
+**FDA Criteria: [1]**
 - Mean |%PE| ≤ **10%** for Cmax and AUC
 - Individual |%PE| ≤ **15%** for each formulation
 """)
@@ -448,4 +450,11 @@ with col3:
 
 
 st.markdown("---")
+
+_PAGE_REFS = ["wagner_nelson_1963", "loo_riegelman_1968", "amidon_bcs_1995", "fda_ivivc_1997"]
+with st.expander("📚 Evidence & sources for this page"):
+    for _r in references_for(_PAGE_REFS):
+        st.markdown(reference_entry_markdown(_r))
+    st.caption("Full verified reference list with DOIs on the 📚 References page (sidebar).")
+
 st.caption("**Disclaimer:** All data shown is synthetic/hypothetical, generated from pharmacokinetic and dissolution mathematical models for educational purposes only.")

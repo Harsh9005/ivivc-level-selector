@@ -108,6 +108,21 @@ def test_reference_entry_markdown_regulatory_uses_official_document_link_text():
     assert "✅" in md
 
 
+def test_references_for_returns_entries_sorted_by_number():
+    out = c.references_for(["wagner_nelson_1963", "fda_ivivc_1997"])
+    assert len(out) == 2
+    # sorted ascending by display number: fda_ivivc_1997 (n=1) before wagner_nelson_1963 (n=8)
+    assert out[0]["key"] == "fda_ivivc_1997"
+    assert out[0]["n"] == 1
+    assert out[1]["key"] == "wagner_nelson_1963"
+    assert out[1]["n"] == 8
+
+
+def test_references_for_unknown_key_raises_keyerror():
+    with pytest.raises(KeyError):
+        c.references_for(["fda_ivivc_1997", "not_a_real_key"])
+
+
 def test_format_authors_truncates_over_six():
     many = [f"Author{i}, X." for i in range(1, 9)]  # 8 authors
     out = c.format_authors(many)

@@ -79,6 +79,25 @@ def cite(*keys: str, path: str | Path | None = None) -> str:
     return "[" + ", ".join(str(n) for n in sorted(numbers)) + "]"
 
 
+def references_for(keys, path: str | Path | None = None) -> list[dict]:
+    """Numbered reference entries for ``keys``, sorted ascending by number ``n``.
+
+    Returns the ``numbered_references`` entries whose ``key`` is in ``keys``,
+    ordered by their stable 1-based display number (so a page's evidence list
+    renders in canonical reference order regardless of how keys were listed).
+
+    Raises ``KeyError(key)`` for any unknown key — a typo'd page key list must
+    fail loud rather than silently drop an entry.
+    """
+    by_key = {ref["key"]: ref for ref in numbered_references(path)}
+    out: list[dict] = []
+    for key in keys:
+        if key not in by_key:
+            raise KeyError(key)
+        out.append(by_key[key])
+    return sorted(out, key=lambda r: r["n"])
+
+
 def format_authors(authors: list[str], max_n: int = 6) -> str:
     """Join authors with ", "; if more than ``max_n``, show first ``max_n`` + " et al."."""
     authors = list(authors)

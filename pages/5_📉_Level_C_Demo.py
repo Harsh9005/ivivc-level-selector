@@ -22,6 +22,7 @@ from utils.plotting import (
     COLORS, plot_level_c_scatter, plot_correlation_heatmap,
     plot_f1_f2_bars, _base_layout,
 )
+from utils.citations import references_for, reference_entry_markdown
 
 # ── Title ────────────────────────────────────────────────────────────────────
 st.title("📉 Level C IVIVC: Single-Point Correlations")
@@ -35,7 +36,7 @@ MRT, Tmax). While it cannot predict the entire plasma profile, it provides:
 - **Practical formulation screening** during early development
 - A basis for **clinically relevant dissolution specifications**
 
-**Synthetic Scenario:** Hypothetical PLGA microsphere depot (IM injection)
+**Synthetic Scenario:** Hypothetical PLGA microsphere depot (IM injection) [14, 15]
 with three formulations differing in polymer molecular weight.
 """)
 
@@ -272,7 +273,7 @@ st.markdown("---")
 st.header("Step 4: f1/f2 Dissolution Similarity Analysis")
 
 st.markdown("""
-The **f1/f2 framework** (FDA/EMA) quantifies dissolution profile similarity:
+The **f1/f2 framework** (FDA/EMA) [13, 5] quantifies dissolution profile similarity:
 
 | Factor | Formula | Criteria |
 |:---:|:---|:---:|
@@ -331,6 +332,7 @@ direction and magnitude.
 
 With **n = 3** formulations (as shown here), R² values range realistically,
 providing genuine statistical power to distinguish strong from weak correlations.
+At least **≥3 formulations** are needed for a meaningful Level C IVIVC. [1]
 """)
 
 show_n2 = st.toggle("Show n=2 comparison (remove Formulation C)", value=False)
@@ -364,4 +366,14 @@ variable influences the pharmacokinetic outcome.
 """)
 
 st.markdown("---")
+
+_PAGE_REFS = [
+    "fda_ivivc_1997", "fda_dissolution_ir_1997", "shah_f2_1998",
+    "langenbucher_1972", "andhariya_2019", "wang_lai_2024", "amidon_bcs_1995",
+]
+with st.expander("📚 Evidence & sources for this page"):
+    for _r in references_for(_PAGE_REFS):
+        st.markdown(reference_entry_markdown(_r))
+    st.caption("Full verified reference list with DOIs on the 📚 References page (sidebar).")
+
 st.caption("**Disclaimer:** All data shown is synthetic/hypothetical, generated from pharmacokinetic and dissolution mathematical models for educational purposes only.")
